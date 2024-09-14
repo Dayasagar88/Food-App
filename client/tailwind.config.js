@@ -55,7 +55,10 @@ export default {
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
   			}
-  		}
+  		},
+		  animation: {
+			slowPulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite', // Slows pulse to 2s
+		  },
   	}
   },
   plugins: [require("tailwindcss-animate")],

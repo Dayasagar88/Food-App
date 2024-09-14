@@ -22,7 +22,7 @@ const Navbar = () => {
 
   return (
     <div className="w-full bg-black h-16">
-      <div className="lg:max-w-[75%] lg:px-0 px-6 text-white flex justify-between items-center h-full mx-auto">
+      <div className="max-w-7xl lg:px-0 px-6 text-white flex justify-between items-center h-full mx-auto">
         <Link to="/">
           <h1 className="text-white select-none md:text-3xl text-2xl font-bold">
             DayaEats
