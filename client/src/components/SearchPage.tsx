@@ -106,7 +106,6 @@ const SearchPage = () => {
                 </Card>
               ))}
             </div>
-            <SearchPageSkeleton/>
           </div>
         </div>
       </div>
@@ -119,7 +118,7 @@ export default SearchPage;
 const SearchPageSkeleton = () => {
   return (
     <>
-    <div className="grid md:grid-col-3 gap-2">
+    <div className="grid md:grid-cols-3 gap-3">
     {[1, 2, 3, 4, 5, 6].map((skeleton: number, index: number) => (
         <Card className="bg-white dark:bg-gray-800 shadow-xl rounded-xl hover:shadow-2xl transition-shadow overflow-hidden duration-300 ">
           <div className="relative animate-pulse">

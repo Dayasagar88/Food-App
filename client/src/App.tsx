@@ -10,6 +10,11 @@ import HeroSection from "./components/HeroSection";
 import Profile from "./components/Profile";
 import SearchPage from "./components/SearchPage";
 import RestaurantMenu from "./components/RestaurantMenu";
+import Cart from "./components/Cart";
+import Restaurant from "./components/Restaurant";
+import AddMenu from "./components/AddMenu";
+import Orders from "./components/Orders";
+import Success from "./components/Success";
 
 const appRouter = createBrowserRouter([
   {
@@ -31,6 +36,26 @@ const appRouter = createBrowserRouter([
       {
         path: "/restaurant/:id",
         element: <RestaurantMenu />,
+      },
+      {
+        path: "/cart",
+        element: <Cart />,
+      },
+      {
+        path: "/order/status",
+        element: <Success/>,
+      },
+      {
+        path: "/admin/restaurant",
+        element: <Restaurant />,
+      },
+      {
+        path: "/admin/menu",
+        element: <AddMenu />,
+      },
+      {
+        path: "/admin/orders",
+        element: <Orders />,
       },
     ],
   },

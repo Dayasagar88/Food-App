@@ -16,7 +16,7 @@ const HeroSection = () => {
   }
 
   return (
-    <div className="flex flex-col  md:flex-row max-w-7xl mx-auto md:mt-20  p-6 items-center rounded-lg justify-center m-4 gap-20">
+    <div className="flex flex-col  md:flex-row max-w-7xl min-h-screen mx-auto   p-6 items-center rounded-lg justify-center m-4 gap-20">
       <div className="flex flex-col gap-10 md:w-[45%]">
         <div className="flex flex-col gap-5">
           <h1 className="font-extrabold md:text-5xl text-4xl">
@@ -33,7 +33,7 @@ const HeroSection = () => {
               placeholder="Search restaurant by name, city and country"
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
-              className="pl-10  shadow-lg focus-visible:ring-transparent"
+              className="pl-10 shadow-lg focus-visible:ring-transparent"
             />
             <Search className=" absolute  text-gray-500 left-2" />
           </div>
