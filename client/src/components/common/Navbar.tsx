@@ -1,7 +1,6 @@
 import {
   HandPlatter,
-  Icon,
-  icons,
+  HomeIcon,
   Menu,
   Moon,
   PackageCheck,
@@ -12,7 +11,7 @@ import {
   UtensilsCrossed,
   X,
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import {
@@ -23,15 +22,22 @@ import {
   MenubarTrigger,
 } from "../ui/menubar";
 import { Button } from "../ui/button";
+import { useUserStore } from "@/store/useUserStore";
+import { useCartStore } from "@/store/useCartStore";
+import { useTheme } from "../ThemeContext";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-  const admin = true;
+  const { cart } = useCartStore();
+  const [isSpinning, setIsSpinning] = useState(false);
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const [theme, setTheme] = useState("light");
+  const { logout, user } = useUserStore();
+  const { theme, toggleTheme } = useTheme();
+  const [currentIcon, setCurrentIcon] = useState(theme);
+   const [isFading, setIsFading] = useState(false);
 
   useEffect(() => {
     if (isMenuOpen) {
@@ -40,6 +46,22 @@ const Navbar = () => {
       document.body.style.overflow = "auto";
     }
   }, [isMenuOpen]);
+
+  const handleClick = () => {
+    setIsSpinning(true); // Start spinning
+    setIsFading(true);   // Start fading out
+
+    // Delay the theme toggle until after the animation (500ms)
+    setTimeout(() => {
+      toggleTheme(); // Toggle the theme after rotation completes
+      setCurrentIcon(currentIcon === 'light' ? 'dark' : 'light'); // Change icon after rotation
+
+      setTimeout(() => {
+        setIsFading(false); // Fade in the new icon
+      }, 100); // Small delay for the fade-in effect
+      setIsSpinning(false); // Stop spinning
+    }, 500); // Match the duration of the spin animation
+  };
 
   return (
     <div className="w-full bg-black z-50 h-16">
@@ -80,37 +102,45 @@ const Navbar = () => {
                   ? "text-orange"
                   : "text-white hover:text-orange transition-text duration-150"
               }
-              to="/orders"
+              to="/order/status"
             >
               Orders
             </NavLink>
           </nav>
           {/* Dark mode */}
           <div className="flex gap-5 items-center">
-            <div className="cursor-pointer">
-              {theme === "light" ? (
-                <Sun onClick={() => setTheme("dark")} />
-              ) : (
-                <Moon onClick={() => setTheme("light")} />
-              )}
-            </div>
+          <div className="cursor-pointer">
+      {currentIcon === 'light' ? (
+        <Sun
+          onClick={handleClick}
+          className={`transition-opacity duration-500 ${isSpinning ? 'animate-spinOnce' : ''} ${isFading ? 'opacity-0' : 'opacity-100'}`} // Handle fading and spinning
+        />
+      ) : (
+        <Moon
+          onClick={handleClick}
+          className={`transition-opacity duration-500 ${isSpinning ? 'animate-spinOnce' : ''} ${isFading ? 'opacity-0' : 'opacity-100'}`} // Handle fading and spinning
+        />
+      )}
+    </div>
             <Link to="/cart">
               <div className="relative">
                 <ShoppingCart />
-                <Button
-                  size={"icon"}
-                  className="bg-red-600 w-4 h-4 absolute -top-1 -right-1"
-                >
-                  1
-                </Button>
+                {cart.length > 0 && (
+                  <Button
+                    size={"icon"}
+                    className="bg-red-600 w-4 h-4 absolute -top-1 -right-1"
+                  >
+                    {cart.length}
+                  </Button>
+                )}
               </div>
             </Link>
             <Avatar className="w-8 h-8">
-              <AvatarImage src="https://github.com/shadcn.png" />
+              <AvatarImage src={user?.profilePicture} />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
           </div>
-          {admin && (
+          {user?.admin && (
             <Menubar className="">
               <MenubarMenu>
                 <MenubarTrigger className="">Dashbord</MenubarTrigger>
@@ -131,8 +161,9 @@ const Navbar = () => {
 
           {/* Logout */}
           <NavLink
+            to=""
             className="hover:text-orange transition-text duration-150"
-            to="/login"
+            onClick={logout}
           >
             Logout
           </NavLink>
@@ -148,17 +179,23 @@ const Navbar = () => {
                 size={"icon"}
                 className="bg-red-600 w-4 h-4 absolute -top-1 -right-1"
               >
-                1
+                {cart.length}
               </Button>
             </div>
           </Link>
-          <div className=" cursor-pointer">
-            {theme === "light" ? (
-              <Sun onClick={() => setTheme("dark")} />
-            ) : (
-              <Moon onClick={() => setTheme("light")} />
-            )}
-          </div>
+          <div className="cursor-pointer">
+      {currentIcon === 'light' ? (
+        <Sun
+          onClick={handleClick}
+          className={`transition-opacity duration-300 ${isSpinning ? 'animate-spinOnce' : ''} ${isFading ? 'opacity-0' : 'opacity-100'}`} // Handle fading and spinning
+        />
+      ) : (
+        <Moon
+          onClick={handleClick}
+          className={`transition-opacity duration-300 ${isSpinning ? 'animate-spinOnce' : ''} ${isFading ? 'opacity-0' : 'opacity-100'}`} // Handle fading and spinning
+        />
+      )}
+    </div>
           <div onClick={toggleMenu} className="cursor-pointer">
             <div
               className={`transition-transform duration-300 transform ${
@@ -178,47 +215,68 @@ const Navbar = () => {
       {/* Mobile Menu */}
       <div
         className={`bg-[#ffffff] text-black z-40 fixed top-16 left-0 w-full h-[calc(100vh-4rem)] flex items-center justify-center md:hidden transition-all duration-500 ease-in-out transform ${
-          isMenuOpen ? "-translate-x-0 opacity-100" : "translate-x-full opacity-0"
+          isMenuOpen
+            ? "-translate-x-0 opacity-100"
+            : "translate-x-full opacity-0"
         }`}
       >
         <nav className="flex select-none   flex-col gap-5 font-bold text-lg">
+          <NavLink
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="flex gap-2"
+            to="/"
+          >
+            <HomeIcon />
+            Home
+          </NavLink>
           <NavLink className="flex gap-2" onClick={toggleMenu} to="/profile">
             <User /> Profile
           </NavLink>
-          {/* {admin && (
-            <Menubar className="">
-              <MenubarMenu>
-                <MenubarTrigger className="text-lg">Dashbord</MenubarTrigger>
-                <MenubarContent className="">
-                  <Link onClick={toggleMenu} to="/admin/restaurant">
-                    <MenubarItem>Restaurant</MenubarItem>
-                  </Link>
-                  <Link onClick={toggleMenu} to="/admin/menu">
-                    <MenubarItem>Menu</MenubarItem>
-                  </Link>
-                  <Link onClick={toggleMenu} to="/admin/orders">
-                    <MenubarItem>Orders</MenubarItem>
-                  </Link>
-                </MenubarContent>
-              </MenubarMenu>
-            </Menubar>
-          )} */}
-          <NavLink onClick={() => setIsMenuOpen(!isMenuOpen)} className="flex gap-2" to="/order/status">
+
+          <NavLink
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="flex gap-2"
+            to="/order/status"
+          >
             <HandPlatter />
             Orders
           </NavLink>
-          <NavLink onClick={() => setIsMenuOpen(!isMenuOpen)} className="flex gap-2" to="/admin/menu">
-            <SquareMenu />
-            Menu
-          </NavLink>
-          <NavLink onClick={() => setIsMenuOpen(!isMenuOpen)} className="flex gap-2" to="/admin/restaurant">
-            <UtensilsCrossed />
-            Restaurant
-          </NavLink>
-          <NavLink onClick={() => setIsMenuOpen(!isMenuOpen)} className="flex gap-2" to="">
-            <PackageCheck /> Restaurant Orders
-          </NavLink>
-          <Button onClick={() => setIsMenuOpen(!isMenuOpen)} className="bg-orange">Logout</Button>
+          {user?.admin && (
+            <>
+              <NavLink
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="flex gap-2"
+                to="/admin/menu"
+              >
+                <SquareMenu />
+                Menu
+              </NavLink>
+              <NavLink
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="flex gap-2"
+                to="/admin/restaurant"
+              >
+                <UtensilsCrossed />
+                Restaurant
+              </NavLink>
+              <NavLink
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="flex gap-2"
+                to=""
+              >
+                <PackageCheck /> Restaurant Orders
+              </NavLink>
+            </>
+          )}
+          <Button
+            onClick={() => {
+              setIsMenuOpen(!isMenuOpen);
+              logout();
+            }}
+            className="bg-orange"
+          >
+            Logout
+          </Button>
         </nav>
       </div>
     </div>

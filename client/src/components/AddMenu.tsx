@@ -8,6 +8,8 @@ import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import EditMenu from "./EditMenu";
 import { MenuFormSchema, menuSchema } from "@/schema/menuSchema";
+import { useMenuStore } from "@/store/useMenuStore";
+import { useRestaurantStore } from "@/store/useRestaurantStore";
 
 const AddMenu = () => {
   const [open, setOpen] = useState<boolean>(false);
@@ -20,32 +22,15 @@ const AddMenu = () => {
     price: 0,
     image: undefined,
   });
-  const loading = false;
-  const menuList = [
-    {
-      name: "Masala Biryani",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Distinctio, illo! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quo, quasi?",
-      price: "20",
-      image:
-        "https://plus.unsplash.com/premium_photo-1670601440146-3b33dfcd7e17?q=80&w=2138&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      name: "Paneer Tikka Sandwich",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Distinctio, illo! Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quo, quasi?",
-      price: "12",
-      image:
-        "https://plus.unsplash.com/premium_photo-1670601440146-3b33dfcd7e17?q=80&w=2138&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-  ];
-
-  const inputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const {loading , createMenu} = useMenuStore();
+  const {restaurant} = useRestaurantStore();
+  
+  const inputChangeHandler =  (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
     setInput({ ...input, [name]: type === "number" ? Number(value) : value });
   };
 
-  const submitHandler = (e: FormEvent<HTMLFormElement>) => {
+  const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const result = menuSchema.safeParse(input);
     if (!result.success) {
@@ -54,7 +39,20 @@ const AddMenu = () => {
       return;
     }
 
-    console.log(input);
+    //API implementation
+    try {
+      const formData = new FormData();
+      formData.append("name", input.name);
+      formData.append("description", input.description);
+      formData.append("price", input.price.toString());
+      if(input.image){
+        formData.append("image", input.image);
+      }
+      await createMenu(formData);
+      setOpen(!open)
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -138,7 +136,7 @@ const AddMenu = () => {
                 />
                 {errors && (
                   <span className="text-red-600 font-semibold text-sm">
-                    {errors.image?.name || "Image file required"}
+                    {errors.image?.name}
                   </span>
                 )}
               </div>
@@ -162,7 +160,7 @@ const AddMenu = () => {
         </Dialog>
       </div>
 
-      {menuList.map((item: any, idx: number) => (
+      {restaurant?.menus.map((item: any, idx: number) => (
         <div key={idx} className="mt-6 space-y-6">
           <div className="flex flex-col md:flex-row border shadow-lg rounded-lg md:items-center md:space-x-4 md:p-4 p-2">
             <img
@@ -171,14 +169,14 @@ const AddMenu = () => {
               className="md:h-24 md:w-24 w-full h-16 object-cover rounded-md"
             />
             <div className="flex-1 ">
-              <h1 className="text-lg font-semibold text-gray-800">
+              <h1 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
                 {item.name}
               </h1>
-              <p className="font-medium text-sm text-gray-600 mt-1">
+              <p className="font-medium text-sm text-gray-600  mt-1">
                 {item.description}
               </p>
               <h2 className="text-md font-semibold mt-2">
-                Price : <span className="text-orange">{item.price}</span>
+                Price : <span className="text-orange">₹{item.price}</span>
               </h2>
             </div>
             <Button

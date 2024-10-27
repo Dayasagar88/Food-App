@@ -1,26 +1,39 @@
-import React from "react";
-import heroImage from "@/assets/hero_pizza.png";
+import  { useEffect } from "react";
 import { Badge } from "./ui/badge";
 import { Timer } from "lucide-react";
 import MenuList from "./MenuList";
+import { useParams } from "react-router-dom";
+import { useRestaurantStore } from "@/store/useRestaurantStore";
+import Loading from "./Loading";
 
 const RestaurantMenu = () => {
+  const params = useParams();
+  const {loading, singleRestaurant, getSingleRestaurant} = useRestaurantStore();
+
+  if (!singleRestaurant) {
+    // Handle the case where singleRestaurant is null
+    return <Loading/>; // Or any other loading/error component
+}
+  const {restaurantName, cuisines, city, country, deliveryTime, imageUrl, menus} = singleRestaurant;
+  useEffect(() => {
+    getSingleRestaurant(params.id!);
+  }, [params.id]);
   return (
     <div className="max-w-6xl min-h-screen mx-auto px-2 my-10">
       <div className="w-full">
         <div className="relative w-full h-32 md:h-64 lg:h-74">
           <img
-            src="https://plus.unsplash.com/premium_photo-1670601440146-3b33dfcd7e17?q=80&w=2138&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            src={imageUrl}
             alt="res_img"
             className="object-cover w-full h-full rounded-lg shadow-lg"
           />
         </div>
         <div className="flex flex-col md:flex-row justify-between">
           <div className="my-5">
-            <h1 className="font-medium text-xl">Chinese Chow Chow</h1>
+            <h1 className="font-medium text-xl">{restaurantName}</h1>
             <div className="flex gap-2 my-2">
-              {["Momos", "Samosa"].map((cuisine, index) => (
-                <Badge key={index}>{cuisine}</Badge>
+              {cuisines.map((cuisine : string) => (
+                <Badge key={cuisine}>{cuisine}</Badge>
               ))}
             </div>
             <div className="flex flex-col md:flex-row gap-2 my-5">
@@ -28,15 +41,18 @@ const RestaurantMenu = () => {
                 <Timer />
                 <h1 className="flex items-center gap-2 font-medium">
                   Delivery time :{" "}
-                  <span className="text-[#D19254]">40 mins</span>
+                  <span className="text-[#D19254]">{deliveryTime} mins</span>
                 </h1>
+              </div>
+              <div className="font-semibold">
+                <p>{city},<span> {country}</span></p>
               </div>
             </div>
           </div>
         </div>
-        <MenuList />
+        <MenuList menus={menus!} />
       </div>
-      <MenuSkeleton/>
+      {loading && <MenuSkeleton/>}
     </div>
   );
 };
@@ -70,7 +86,7 @@ const MenuSkeleton = () => {
         <div className="mt-10">
           <div className="h-6 w-1/4 bg-gray-300 rounded-md mb-6"></div>
           <div className="grid md:grid-cols-3 lg:gap-10 gap-1 justify-between space-y-4 md:space-y-0">
-            {[1, 2, 3].map((item, index) => (
+            {[1, 2, 3].map(( index) => (
               <div
                 key={index}
                 className="w-[100%] mx-auto shadow-lg rounded-lg overflow-hidden animate-pulse bg-gray-300"

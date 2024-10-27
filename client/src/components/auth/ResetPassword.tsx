@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import  { useState } from 'react'
 import { Input } from '../ui/input'
-import { Loader, LockKeyhole, Mail } from 'lucide-react';
+import { Loader, LockKeyhole } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Link } from 'react-router-dom';
 

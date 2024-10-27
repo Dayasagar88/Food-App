@@ -4,19 +4,21 @@ import { Loader, LocateIcon, Mail, MapPin, MapPinnedIcon, Plus } from "lucide-re
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
+import { useUserStore } from "@/store/useUserStore";
 
 const Profile = () => {
   const imageRef = useRef<HTMLInputElement | null>(null);
-  const [selectedImage, setSelectedImage] = useState<string>("");
+  const {loading,user , updateProfile} = useUserStore();
   const [profileData, setProfileData] = useState({
-    fullname: "",
-    email: "",
-    address: "",
-    phone: "",
-    city: "",
-    country: "",
-    profilePicture: "",
+    fullname: user?.fullname || "",
+    email: user?.email || "",
+    address: user?.address || "",
+    phone: user?.contact || "",
+    city: user?.city || "",
+    country: user?.country || "",
+    profilePicture: user?.profilePicture || "",
   });
+  const [selectedImage, setSelectedImage] = useState<string>(profileData.profilePicture || "");
   const fileChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -35,18 +37,18 @@ const Profile = () => {
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setProfileData({ ...profileData, [name]: value });
+    setProfileData({...profileData, [name]: value });
   };
 
-  const updateProfileHandler = (e:FormEvent<HTMLFormElement>) => {
+  const updateProfileHandler = async  (e:FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+       await updateProfile(profileData)
   }
-  const loading = false;
 
 
 
   return (
-    <form onSubmit={updateProfileHandler} className="max-w-7xl px-2 min-h-screen mx-auto my-5">
+    <form onSubmit={updateProfileHandler} className="max-w-7xl px-2 min-h-screen mx-auto my-5 dark:text-black">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Avatar className="relative md:w-28 md:h-28 w-20 h-20">
@@ -71,7 +73,7 @@ const Profile = () => {
             name="fullname"
             value={profileData.fullname}
             onChange={changeHandler}
-            className="font-bold text-2xl outline-none border-none focus-visible:ring-transparent"
+            className="font-bold text-2xl dark:text-white outline-none border-none focus-visible:ring-transparent"
           />
         </div>
       </div>

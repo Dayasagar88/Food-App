@@ -1,10 +1,12 @@
-import React, { ChangeEvent, ChangeEventHandler, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import { Input } from "../ui/input";
 import { CircleAlert, Loader, LockKeyhole, Mail } from "lucide-react";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { LoginInputState, userLoginSchema } from "@/schema/userSchema";
+import {useUserStore} from "../../store/useUserStore"
+
 
 
 
@@ -14,29 +16,35 @@ const Login = () => {
     password: "",
   });
   const [errors , setErrors] = useState<Partial<LoginInputState>>({})
+  const navigate = useNavigate()
 
   const inputChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setInput({ ...input, [name]: value });
   };
+  const {loading, login} = useUserStore();
 
   const loginHandler = async (e:FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
     //Form validation here
     const result = userLoginSchema.safeParse(input);
     if(!result.success){
       const fieldErrors = result.error.formErrors.fieldErrors;
       setErrors(fieldErrors as Partial<LoginInputState>);
+      return;
     }
-    //Form validation end
 
-    //API implementaion
-
-    console.log(input);
+    // Form validation end
+    try {
+      await login(input)
+      navigate("/")
+    } catch (error) {
+      console.log(error)
+    }
+   
   };
 
-  const loading = false;
   return (
     <div className="flex justify-center items-center min-h-screen">
       <form className="md:p-8 p-4 shadow-lg bg-white border w-full max-w-md border-gray-200 rounded-lg mx-4">

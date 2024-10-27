@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",         // CommonJS module format
+    "target": "esnext",           // Target latest ECMAScript standard
+    "esModuleInterop": true,      // Allow default imports for CommonJS modules
+    "skipLibCheck": true,         // Skip type checking for dependencies
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "moduleResolution": "node"
+  },
+  "include": ["./**/*.ts"],        // Include all TypeScript files in your project
+  "exclude": ["node_modules"]
+}

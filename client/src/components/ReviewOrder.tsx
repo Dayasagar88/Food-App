@@ -4,6 +4,12 @@ import { DialogContent, DialogDescription, DialogTitle } from "./ui/dialog";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import { useUserStore } from "@/store/useUserStore";
+import { CheckoutSessionRequest } from "@/types/orderType";
+import { useCartStore } from "@/store/useCartStore";
+import { useRestaurantStore } from "@/store/useRestaurantStore";
+import { useOrderStore } from "@/store/useOrderStore";
+import { Loader } from "lucide-react";
 
 const ReviewOrder = ({
   open,
@@ -12,23 +18,45 @@ const ReviewOrder = ({
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
+  const { user } = useUserStore();
   const [input, setInput] = useState({
-    name: "",
-    email: "",
-    contact: "",
-    address: "",
-    city: "",
-    country: "",
+    name: user?.fullname || "",
+    email: user?.email || "",
+    contact: (user?.contact || "").toString(),
+    address: user?.address || "",
+    city: user?.city || "",
+    country: user?.country || "",
   });
+  const { cart } = useCartStore();
+  const { restaurant } = useRestaurantStore();
+  const { loading, createCheckoutSession } = useOrderStore();
+  const {clearCart} = useCartStore()
 
   const inputChangehandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setInput({ ...input, [name]: value });
   };
 
-  const handleSubmit = (e:React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(input)
+    // api implementation start from here
+    try {
+      const checkoutData: CheckoutSessionRequest = {
+        cartItems: cart.map((cartItem) => ({
+          menuId: cartItem._id,
+          name: cartItem.name,
+          image: cartItem.image,
+          price: cartItem.price.toString(),
+          quantity: cartItem.quantity.toString(),
+        })),
+        deliveryDetails: input,
+        restaurantId: restaurant?._id as string,
+      };
+      await createCheckoutSession(checkoutData);
+      clearCart()
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -40,7 +68,10 @@ const ReviewOrder = ({
           correct. When you are ready, hit confirm button to finalize your
           order.
         </DialogDescription>
-        <form onSubmit={handleSubmit} className="md:grid grid-cols-2 gap-2 space-y-1 md:space-y-0">
+        <form
+          onSubmit={handleSubmit}
+          className="md:grid grid-cols-2 gap-2 space-y-1 md:space-y-0"
+        >
           <div>
             <Label>Name</Label>
             <Input
@@ -53,6 +84,7 @@ const ReviewOrder = ({
           <div>
             <Label>Email</Label>
             <Input
+              disabled
               type="text"
               value={input.email}
               name="email"
@@ -96,7 +128,20 @@ const ReviewOrder = ({
             />
           </div>
           <DialogFooter className="w-full">
-            <Button className="bg-orange hover:bg-hoverOrange w-full mt-2">Proceed To Payment</Button>
+            <div className="text-cente w-full mt-2">
+              <Button
+                disabled={loading}
+                className="bg-orange hover:bg-hoverOrange w-full"
+              >
+                {loading ? (
+                  <>
+                    <Loader className="animate-spin mr-1" /> Please wait...
+                  </>
+                ) : (
+                  "Proceed To Payment"
+                )}
+              </Button>
+            </div>
           </DialogFooter>
         </form>
       </DialogContent>
