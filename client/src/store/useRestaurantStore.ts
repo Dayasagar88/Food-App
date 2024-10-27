@@ -79,7 +79,7 @@ export const useRestaurantStore = create<RestaurantState>()(
           params.set("searchQuery", searchQuery);
           params.set("selectedCuisines", selectedCuisines.join(","));
 
-          await new Promise((resolve) => setTimeout(resolve, 500));
+          await new Promise((resolve) => setTimeout(resolve, 1000));
           const res = await axios.get(
             `${API_END_POINT}/search/${searchText}?${params.toString()}`
           );
@@ -138,6 +138,7 @@ export const useRestaurantStore = create<RestaurantState>()(
       getRestaurantOrders : async () => {
         try {
           set({loading : true})
+          await new Promise((resolve) => setTimeout(resolve, 1000));
           const res = await axios.get(`${API_END_POINT}/orders`);
           if(res.data.success){
             set({loading : false , restaurantOrders:res.data.orders,});

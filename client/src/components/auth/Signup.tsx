@@ -47,8 +47,8 @@ const Signup = () => {
 
 
   return (
-    <div className="flex justify-center items-center min-h-screen">
-      <form className="md:p-8 p-4 shadow-lg bg-white border w-full max-w-md border-gray-200 rounded-lg mx-4">
+    <div className="flex justify-center dark:bg-gray-900 items-center min-h-screen">
+      <form className="md:p-8 dark:bg-black p-4 shadow-lg bg-white border w-full max-w-md border-gray-200 rounded-lg mx-4">
         <div className="mb-4">
           <h1 className="font-bold text-2xl">Food App</h1>
         </div>

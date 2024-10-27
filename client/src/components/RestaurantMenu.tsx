@@ -10,14 +10,19 @@ const RestaurantMenu = () => {
   const params = useParams();
   const {loading, singleRestaurant, getSingleRestaurant} = useRestaurantStore();
 
-  if (!singleRestaurant) {
-    // Handle the case where singleRestaurant is null
-    return <Loading/>; // Or any other loading/error component
-}
-  const {restaurantName, cuisines, city, country, deliveryTime, imageUrl, menus} = singleRestaurant;
   useEffect(() => {
     getSingleRestaurant(params.id!);
-  }, [params.id]);
+  }, [params.id, getSingleRestaurant]);
+
+  if(loading){
+    return <Loading/>
+  }
+  if (!singleRestaurant) {
+    return <div>No restaurant found</div>;
+  }
+
+  const {restaurantName, cuisines, city, country, deliveryTime, imageUrl, menus} = singleRestaurant;
+
   return (
     <div className="max-w-6xl min-h-screen mx-auto px-2 my-10">
       <div className="w-full">
@@ -25,7 +30,7 @@ const RestaurantMenu = () => {
           <img
             src={imageUrl}
             alt="res_img"
-            className="object-cover w-full h-full rounded-lg shadow-lg"
+            className="w-full h-full rounded-lg shadow-lg"
           />
         </div>
         <div className="flex flex-col md:flex-row justify-between">

@@ -6,14 +6,14 @@ import { Egg, Coffee, Flame, Utensils, Clock } from 'lucide-react'
 export default function Loading() {
   const icons = [
     { Icon: Egg, color: 'text-yellow-400' },
-    { Icon: Coffee, color: 'text-brown-600' },
+    { Icon: Coffee, color: 'text-black' },
     { Icon: Flame, color: 'text-orange-500' },
     { Icon: Utensils, color: 'text-gray-600' },
     { Icon: Clock, color: 'text-blue-500' },
   ]
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-gray-400">
       <div className="text-center">
         <motion.div
           className="flex space-x-4 mb-4"

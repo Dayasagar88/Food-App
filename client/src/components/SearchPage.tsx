@@ -13,6 +13,7 @@ import { Restaurant } from "@/types/restaurantType";
 const SearchPage = () => {
   const { text } = useParams();
   const {
+    // loading,
     searchedRestaurant,
     searchRestaurant,
     appliedFilter,
@@ -30,6 +31,7 @@ const SearchPage = () => {
       <div className="flex flex-col md:flex-row justify-between gap-10">
         <FilterPage />
         <div className="flex-1">
+
           {/* Search input field */}
           <div className="flex gap-2">
             <Input
@@ -48,7 +50,10 @@ const SearchPage = () => {
               Search
             </Button>
           </div>
+
           <div>
+
+
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-2 my-3">
               <h1 className="font-medium text-lg">
                 ({searchedRestaurant?.data?.length}) Search result found
@@ -74,25 +79,28 @@ const SearchPage = () => {
                 ))}
               </div>
             </div>
+
+
             {/* Restaurant card */}
-            <div>
+            <div className="grid  sm:grid-cols-3  gap-4 cursor-pointer">
               {loading ? (
-                <SearchPageSkeleton />
+                <SearchPageSkeleton/>
               ) : !loading && searchedRestaurant?.data.length === 0 ? (
                 <NoResultFound searchText={text!} />
               ) : (
                 searchedRestaurant?.data?.map((card: Restaurant) => (
-                  <div key={card._id} className="grid w-full sm:grid-cols-3 gap-4 cursor-pointer">
+                  <div key={card._id} className="">
+
                     <Card
                       key={card._id}
-                      className="bg-white dark:bg-gray-800 shadow-xl rounded-xl hover:shadow-2xl transition-shadow overflow-hidden duration-300"
+                      className="bg-white dark:bg-gray-800 shadow-xl rounded-xl hover:shadow-2xl transition-shadow h-full overflow-hidden flex flex-col justify-between duration-300"
                     >
-                      <div className="relative h-[40%]">
-                        <div className=" h-[50%] w-full">
+                      <div className="relative overflow-hidden">
+                        <div className="  w-full">
                           <img
                             src={card.imageUrl}
-                            alt=""
-                            className="w-full h-full object-cover"
+                            alt="img"
+                            className="w-full h-36 sm:h-full object-cover"
                           />
                         </div>
 
@@ -142,10 +150,13 @@ const SearchPage = () => {
                         </Link>
                       </CardFooter>
                     </Card>
+
                   </div>
                 ))
               )}
             </div>
+
+
           </div>
         </div>
       </div>

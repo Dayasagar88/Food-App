@@ -43,8 +43,8 @@ const VerifyEmail = () => {
   }
 
   return (
-    <div className="flex justify-center items-center h-screen w-full">
-      <div className="p-8 rounded-md w-full max-w-md  flex flex-col gap-10 border bg-white">
+    <div className="flex dark:bg-gray-900 justify-center items-center h-screen w-full">
+      <div className="p-8 dark:bg-black rounded-md w-full max-w-md  flex flex-col gap-10 border bg-white">
         <div>
           <h1 className="text-2xl font-extrabold mb-2">Verify your email</h1>
           <p className="text-gray-600 text-sm">
@@ -79,7 +79,7 @@ const VerifyEmail = () => {
               "Verify"
             )}
           </Button>
-          <p>
+          <p className="mt-4">
             Back to{" "}
             <Link to="/login" className="text-blue-500 hover:underline">
               Login

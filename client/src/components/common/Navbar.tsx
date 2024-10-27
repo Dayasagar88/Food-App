@@ -175,12 +175,12 @@ const Navbar = () => {
             <div className="relative">
               <ShoppingCart />
 
-              <Button
+              {cart.length > 0 && <Button
                 size={"icon"}
                 className="bg-red-600 w-4 h-4 absolute -top-1 -right-1"
               >
                 {cart.length}
-              </Button>
+              </Button>}
             </div>
           </Link>
           <div className="cursor-pointer">

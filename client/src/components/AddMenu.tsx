@@ -50,6 +50,13 @@ const AddMenu = () => {
       }
       await createMenu(formData);
       setOpen(!open)
+
+      setInput({
+        name: "",
+        description: "",
+        price: 0,
+        image: undefined,
+      });
     } catch (error) {
       console.log(error);
     }
