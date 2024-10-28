@@ -3,7 +3,7 @@ import { MenuItem } from "@/types/restaurantType";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-// interface CartItem
+
 
 export const useCartStore = create<CartState>()(
   persist(
