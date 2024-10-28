@@ -41,11 +41,17 @@ app.use("*", (_, res) => {
 });
 
 app.listen(PORT, async () => {
-  try {
-    await connectDB();
-    console.log(`Server is running on port ${PORT}`);
-  } catch (error) {
-    console.error("Database connection failed:", error);
-    process.exit(1); // Exit if DB connection fails
-  }
+    try {
+        await connectDB();
+        console.log(`Server is running on port ${PORT}`);
+        
+        // Manual Garbage Collection trigger
+        if (global.gc) {
+            global.gc(); // Triggering GC to clear memory
+            console.log("Garbage collection triggered.");
+        }
+    } catch (error) {
+        console.error("Database connection failed:", error);
+        process.exit(1); // Exit if DB connection fails
+    }
 });
